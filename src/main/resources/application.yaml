@@ -1,0 +1,39 @@
+# Server Configuration
+server:
+  port: 10101
+  servlet:
+    context-path: /fee-payment-process
+
+# Spring Configurations
+spring:
+  application:
+    name: fee-payment-process
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/fee-payment-db
+      database: fee-payment-db
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create-update
+        jdbc:
+          lob:
+            non_contextual_creation: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+
+camunda.bpm:
+  admin-user:
+    id: ahin
+    password: ahin
+  metrics:
+    db-reporter-activate: false
+  database:
+    schema-update: create-drop

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.feeprocess.util.Constants;
 import com.feeprocess.util.WorkflowLogger;
 
-@Service("SendFailedEmail")
+@Service("paymentRejectionEmail")
 public class SendFailedEmail implements JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

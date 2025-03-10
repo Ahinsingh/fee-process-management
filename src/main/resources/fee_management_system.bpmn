@@ -37,10 +37,6 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${paymentSuccess}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_12ll4ve" name="No" sourceRef="PaymentSuccess" targetRef="ManualReview" />
-    <bpmn:serviceTask id="SendPaymentFaliedEmail" name="Send Payment Falied&#10;Email" camunda:delegateExpression="#{SendFailedEmail}">
-      <bpmn:incoming>Flow_0kni60d</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ytirl0</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="GenerateReceipt" name="Generate Receipt" camunda:delegateExpression="#{GenerateReceipt}">
       <bpmn:incoming>Flow_05sjabz</bpmn:incoming>
       <bpmn:incoming>Flow_1g6qo5b</bpmn:incoming>
@@ -53,10 +49,8 @@
     </bpmn:serviceTask>
     <bpmn:endEvent id="Event_03l0v5x">
       <bpmn:incoming>Flow_04b7rxl</bpmn:incoming>
-      <bpmn:incoming>Flow_0ytirl0</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_04b7rxl" sourceRef="UpdateFinancialRecords" targetRef="Event_03l0v5x" />
-    <bpmn:sequenceFlow id="Flow_0ytirl0" sourceRef="SendPaymentFaliedEmail" targetRef="Event_03l0v5x" />
     <bpmn:sequenceFlow id="Flow_067n3dz" sourceRef="ManualReview" targetRef="ReviewApproved" />
     <bpmn:userTask id="ManualReview" name="Manual Review" camunda:candidateUsers="reviewer" camunda:candidateGroups="reviewers">
       <bpmn:incoming>Flow_12ll4ve</bpmn:incoming>
@@ -64,15 +58,27 @@
     </bpmn:userTask>
     <bpmn:exclusiveGateway id="ReviewApproved" name="Review Approved">
       <bpmn:incoming>Flow_067n3dz</bpmn:incoming>
-      <bpmn:outgoing>Flow_0kni60d</bpmn:outgoing>
       <bpmn:outgoing>Flow_1g6qo5b</bpmn:outgoing>
+      <bpmn:outgoing>Flow_18mw1m2</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0kni60d" name="Declined" sourceRef="ReviewApproved" targetRef="SendPaymentFaliedEmail">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{!approved}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1g6qo5b" name="Approved" sourceRef="ReviewApproved" targetRef="GenerateReceipt">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_18mw1m2" name="Declined" sourceRef="ReviewApproved" targetRef="Event_1d9ok5o" />
+    <bpmn:intermediateThrowEvent id="Event_1d9ok5o">
+      <bpmn:incoming>Flow_18mw1m2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1kjnt9c</bpmn:outgoing>
+      <bpmn:compensateEventDefinition id="CompensateEventDefinition_0qmrxzh" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="Event_00cwfc4">
+      <bpmn:incoming>Flow_1kjnt9c</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1kjnt9c" sourceRef="Event_1d9ok5o" targetRef="Event_00cwfc4" />
+    <bpmn:boundaryEvent id="Event_019j3e8" attachedToRef="PaymentProcess">
+      <bpmn:compensateEventDefinition id="CompensateEventDefinition_0d2dcfy" />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="PaymentRejectionEmail" name="Payment Rejection Email" isForCompensation="true" camunda:delegateExpression="#{paymentRejectionEmail}" />
+    <bpmn:association id="Association_12m05uw" associationDirection="One" sourceRef="Event_019j3e8" targetRef="PaymentRejectionEmail" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="FeePaymentProcess">
@@ -94,53 +100,51 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_05sjabz_di" bpmnElement="Flow_05sjabz">
         <di:waypoint x="725" y="97" />
-        <di:waypoint x="813" y="97" />
-        <di:waypoint x="813" y="110" />
-        <di:waypoint x="880" y="110" />
+        <di:waypoint x="773" y="97" />
+        <di:waypoint x="773" y="110" />
+        <di:waypoint x="820" y="110" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="837" y="103" width="18" height="14" />
+          <dc:Bounds x="781" y="90" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_12ll4ve_di" bpmnElement="Flow_12ll4ve">
         <di:waypoint x="700" y="122" />
         <di:waypoint x="700" y="240" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="708" y="198" width="15" height="14" />
+          <dc:Bounds x="708" y="199" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_18xi5gm_di" bpmnElement="Flow_18xi5gm">
+        <di:waypoint x="920" y="110" />
         <di:waypoint x="980" y="110" />
-        <di:waypoint x="1040" y="110" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_04b7rxl_di" bpmnElement="Flow_04b7rxl">
-        <di:waypoint x="1090" y="70" />
-        <di:waypoint x="1090" y="37" />
-        <di:waypoint x="1220" y="37" />
-        <di:waypoint x="1220" y="102" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ytirl0_di" bpmnElement="Flow_0ytirl0">
-        <di:waypoint x="1080" y="390" />
-        <di:waypoint x="1220" y="390" />
-        <di:waypoint x="1220" y="138" />
+        <di:waypoint x="1030" y="70" />
+        <di:waypoint x="1030" y="37" />
+        <di:waypoint x="1160" y="37" />
+        <di:waypoint x="1160" y="102" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_067n3dz_di" bpmnElement="Flow_067n3dz">
         <di:waypoint x="750" y="280" />
-        <di:waypoint x="905" y="280" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0kni60d_di" bpmnElement="Flow_0kni60d">
-        <di:waypoint x="930" y="305" />
-        <di:waypoint x="930" y="410" />
-        <di:waypoint x="980" y="410" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="924" y="355" width="43" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="845" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1g6qo5b_di" bpmnElement="Flow_1g6qo5b">
-        <di:waypoint x="930" y="255" />
-        <di:waypoint x="930" y="150" />
+        <di:waypoint x="870" y="255" />
+        <di:waypoint x="870" y="150" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="922" y="200" width="47" height="14" />
+          <dc:Bounds x="862" y="200" width="47" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18mw1m2_di" bpmnElement="Flow_18mw1m2">
+        <di:waypoint x="870" y="305" />
+        <di:waypoint x="870" y="402" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="864" y="351" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kjnt9c_di" bpmnElement="Flow_1kjnt9c">
+        <di:waypoint x="888" y="420" />
+        <di:waypoint x="942" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="79" width="36" height="36" />
@@ -160,26 +164,40 @@
       <bpmndi:BPMNShape id="Activity_150jb9d_di" bpmnElement="VerifyStudent">
         <dc:Bounds x="240" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0rfsv1l_di" bpmnElement="SendPaymentFaliedEmail">
-        <dc:Bounds x="980" y="370" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_03l0v5x_di" bpmnElement="Event_03l0v5x">
+        <dc:Bounds x="1142" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0p9j76l_di" bpmnElement="ReviewApproved" isMarkerVisible="true">
+        <dc:Bounds x="845" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="809.5" y="233" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1l6fxkf_di" bpmnElement="GenerateReceipt">
+        <dc:Bounds x="820" y="70" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15yekzr_di" bpmnElement="UpdateFinancialRecords">
+        <dc:Bounds x="980" y="70" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0uqxgkz_di" bpmnElement="Event_1d9ok5o">
+        <dc:Bounds x="852" y="402" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_00cwfc4_di" bpmnElement="Event_00cwfc4">
+        <dc:Bounds x="942" y="402" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_052vt2r_di" bpmnElement="PaymentRejectionEmail">
+        <dc:Bounds x="420" y="220" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_01y5jml_di" bpmnElement="ManualReview">
         <dc:Bounds x="650" y="240" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_03l0v5x_di" bpmnElement="Event_03l0v5x">
-        <dc:Bounds x="1202" y="102" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0p9j76l_di" bpmnElement="ReviewApproved" isMarkerVisible="true">
-        <dc:Bounds x="905" y="255" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="869.5" y="233" width="87" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1l6fxkf_di" bpmnElement="GenerateReceipt">
-        <dc:Bounds x="880" y="70" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_15yekzr_di" bpmnElement="UpdateFinancialRecords">
-        <dc:Bounds x="1040" y="70" width="100" height="80" />
+      <bpmndi:BPMNEdge id="Association_12m05uw_di" bpmnElement="Association_12m05uw">
+        <di:waypoint x="600" y="155" />
+        <di:waypoint x="600" y="260" />
+        <di:waypoint x="520" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1fkr4a9_di" bpmnElement="Event_019j3e8">
+        <dc:Bounds x="582" y="119" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

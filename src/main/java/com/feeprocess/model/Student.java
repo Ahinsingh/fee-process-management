@@ -1,17 +1,12 @@
 package com.feeprocess.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "student")
 public class Student {
-    @Id
+
     private String id;
     private String name;
     private long studentClass;
     private double amount;
 
-    // Constructors
     public Student() {}
 
     public Student(String id, String name, long studentClass, double amount) {

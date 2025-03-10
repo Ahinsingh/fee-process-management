@@ -8,26 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.feeprocess.model.Payment;
-import com.feeprocess.repository.PaymentRepository;
-import com.feeprocess.repository.StudentRepository;
+import com.feeprocess.service.FeeProcessService;
 
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
 
     @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
+    private FeeProcessService service;
 
     @PostMapping
     public ResponseEntity<?> createPayment(@RequestBody Payment payment) {
-        if (!studentRepository.existsById(payment.getStudentId())) {
-            return ResponseEntity.badRequest().body("Student not found!");
-        }
-
-        Payment savedPayment = paymentRepository.save(payment);
+        Payment savedPayment = service.createPayment(payment);
         return ResponseEntity.ok(savedPayment);
     }
 }

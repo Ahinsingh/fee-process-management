@@ -1,6 +1,5 @@
 package com.feeprocess.workflow.delegates;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.feeprocess.model.Student;
-import com.feeprocess.repository.StudentRepository;
+import com.feeprocess.service.FeeProcessService;
 import com.feeprocess.util.Constants;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +28,7 @@ public class CheckDueAmountTest {
     private DelegateExecution execution;
 
     @Mock
-    private StudentRepository studentRepository;
+    private FeeProcessService feeProcessService;
 
     @InjectMocks
     private CheckDueAmount checkDueAmount;
@@ -47,8 +46,7 @@ public class CheckDueAmountTest {
     @Test
     void testExecute_StudentHasDue() {
         Student student = new Student("67cd2c4fc1b84829024da64e", "Ahin", 10, 1000);
-        when(studentRepository.findById("67cd2c4fc1b84829024da64e")).thenReturn(Optional.of(student));
-
+        when(feeProcessService.student("67cd2c4fc1b84829024da64e")).thenReturn(student);
         Map<String, Object> variables = new HashMap<>();
         variables.put(Constants.ID, "67cd2c4fc1b84829024da64e");
         variables.put(Constants.AMOUNT, 1000L);
@@ -60,7 +58,7 @@ public class CheckDueAmountTest {
     @Test
     void testExecute_StudentNoDue() {
         Student student = new Student("67cd2c4fc1b84829024da64e", "Ahin", 10, 0);
-        when(studentRepository.findById("67cd2c4fc1b84829024da64e")).thenReturn(Optional.of(student));
+        when(feeProcessService.student("67cd2c4fc1b84829024da64e")).thenReturn(student);
         
         Map<String, Object> variables = new HashMap<>();
         variables.put(Constants.ID, "67cd2c4fc1b84829024da64e");

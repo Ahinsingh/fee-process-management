@@ -1,7 +1,5 @@
 package com.feeprocess.workflow.delegates;
 
-import java.util.Optional;
-
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.feeprocess.model.Payment;
 import com.feeprocess.model.Student;
 import com.feeprocess.repository.PaymentRepository;
-import com.feeprocess.repository.StudentRepository;
+import com.feeprocess.service.FeeProcessService;
 import com.feeprocess.util.Constants;
 import com.feeprocess.util.WorkflowLogger;
 
@@ -23,7 +21,7 @@ public class PaymentProcess implements JavaDelegate {
     private PaymentRepository paymentRepository;
     
     @Autowired
-    private StudentRepository studentRepository;
+    private FeeProcessService service;
 
     public static final String CHECK_PAYMENT_DONE = "Check Payment Done";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,13 +37,15 @@ public class PaymentProcess implements JavaDelegate {
         long studentAmount = getFormFieldId(execution, Constants.AMOUNT);
         
         if (studentId !="" && !studentName.isEmpty() && studentClass!= 0) {
-        	 Optional<Student> student =  studentRepository.findById(studentId);
-        	  if(studentAmount == student.get().getAmount()) {
+        	 Student student =  service.student(studentId);
+        	 
+        	 
+        	  if(studentAmount == student.getAmount()) {
         		  Payment payment =  new Payment(studentId, studentId, studentClass, studentAmount, true);
         		  Payment savedPayment = paymentRepository.save(payment);
         		  if(savedPayment!=null) {
-        			  student.get().setAmount(0);
-        			  studentRepository.save(student.get());
+        			  student.setAmount(0);
+        			  Student responseObj =  service.resetStudentFee(student);
         			  paymentSuccess=true;
         		  }
                   WorkflowLogger.info(logger, "Verify_Payment", "Payment Success");

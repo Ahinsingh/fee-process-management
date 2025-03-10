@@ -19,10 +19,6 @@ public class VerifyStudent implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         WorkflowLogger.info(logger, VERIFY_STUDENT, "Check its a valid student");
         boolean studentAvailable;
-
-        //in all the ingredients,
-        //mandatory : instant noodles, water, pan & spatula
-        //optional : veggies,
         String studentId = getFormField(execution, Constants.ID);
         String studentName = getFormField(execution, Constants.NAME);
         long studentClass = getFormFieldId(execution, Constants.CLASS);
@@ -39,11 +35,6 @@ public class VerifyStudent implements JavaDelegate {
         execution.setVariable(Constants.STUDENT_AVAILABLE, studentAvailable);
     }
 
-    /**
-     * @param execution : delegate execution to extract process instance variables
-     * @param formField : form field to be extracted
-     * @return
-     */
     private String getFormField(DelegateExecution execution, String formField) {
         if (execution.hasVariable(formField))
             return (String) execution.getVariable(formField);

@@ -1,7 +1,5 @@
 package com.feeprocess.workflow.delegates;
 
-import java.util.Optional;
-
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
@@ -10,17 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.feeprocess.model.Student;
-import com.feeprocess.repository.StudentRepository;
+import com.feeprocess.service.FeeProcessService;
 import com.feeprocess.util.Constants;
 import com.feeprocess.util.WorkflowLogger;
 
 @Service("CheckDueAmount")
 public class CheckDueAmount implements JavaDelegate {
-
-
-    @Autowired
-    private StudentRepository studentRepository;
 	
+    @Autowired
+    private FeeProcessService service;
 	
     public static final String VERIFY_STUDENT = "Verify Student";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -35,9 +31,9 @@ public class CheckDueAmount implements JavaDelegate {
 //        long studentClass = getFormFieldId(execution, Constants.CLASS);
         long studentAmount = getFormFieldId(execution, Constants.AMOUNT);
         
-        Optional<Student> payment =  studentRepository.findById(studentId);
+        Student student =  service.student(studentId);
 
-        if (studentId!="" && payment!=null && studentAmount != 0 && payment.get().getAmount() > 0) {
+        if (studentId!="" && student!=null && studentAmount != 0 && student.getAmount() > 0) {
         	studentDueAmount = true;
             WorkflowLogger.info(logger, VERIFY_STUDENT, "we can processing the fee");
         } else {

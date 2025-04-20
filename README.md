@@ -9,10 +9,10 @@ This project is a microservices-based system for managing students, courses, and
 | Service Name             | Port  | Description                                       |
 |--------------------------|-------|---------------------------------------------------|
 | Service Registry         | 8761  | Eureka Server for service discovery              |
-| API Gateway              | 8088  | Gateway for routing requests to microservices     |
+| API Gateway              | 8080  | Gateway for routing requests to microservices     |
 | Student Service          | 8082  | Manages student data                             |
 | Catalog Service          | 8083  | Manages course catalog and course information    |
-| Fee Process Service      | 8084  | Handles fee processing and integrates with student and catalog |
+| Fee Process Service      | 8081  | Handles fee processing and integrates with student and catalog |
 
 ---
 

@@ -63,7 +63,6 @@ Each service exposes Swagger UI for API testing and documentation.
 
 | Service         | Swagger URL                                       |
 |----------------|----------------------------------------------------|
-| API Gateway     | `http://localhost:8080/swagger-ui.html`          |
 | Student Service | `http://localhost:8082/swagger-ui.html`          |
 | Catalog Service | `http://localhost:8083/swagger-ui.html`          |
 | Fee Service     | `http://localhost:8081/swagger-ui.html`          |

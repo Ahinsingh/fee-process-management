@@ -4,10 +4,10 @@
     <bpmn:startEvent id="StartEvent_1" camunda:formRef="" camunda:formRefBinding="latest">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="name" label="student name" type="string" />
-          <camunda:formField id="studentClass" label="student class" type="long" />
-          <camunda:formField id="id" label="student Id" type="string" />
-          <camunda:formField id="amount" label="fee amount" type="long" />
+          <camunda:formField id="courseCode" label="Course Code" type="string" />
+          <camunda:formField id="className" label="student class" type="string" />
+          <camunda:formField id="studentId" label="student Id" type="string" />
+          <camunda:formField id="payAmount" label="Amount" type="long" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_0npvynm</bpmn:outgoing>
@@ -119,10 +119,8 @@
         <di:waypoint x="980" y="110" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_04b7rxl_di" bpmnElement="Flow_04b7rxl">
-        <di:waypoint x="1030" y="70" />
-        <di:waypoint x="1030" y="37" />
-        <di:waypoint x="1160" y="37" />
-        <di:waypoint x="1160" y="102" />
+        <di:waypoint x="1080" y="120" />
+        <di:waypoint x="1142" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_067n3dz_di" bpmnElement="Flow_067n3dz">
         <di:waypoint x="750" y="280" />

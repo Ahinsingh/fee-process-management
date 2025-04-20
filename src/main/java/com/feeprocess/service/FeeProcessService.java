@@ -1,10 +1,14 @@
 package com.feeprocess.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.feeprocess.model.Catalog;
 import com.feeprocess.model.Payment;
 import com.feeprocess.model.Student;
 import com.feeprocess.repository.PaymentRepository;
@@ -16,49 +20,76 @@ public class FeeProcessService {
 	private PaymentRepository paymentRepository;
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private StudentClient apiClient;
+
+	@Autowired
+	private CatalogClient catalogClient;
 
 	public Payment createPayment(Payment payment) {
 
-		String studentUrl = "http://localhost:8082/student-service/student/" + payment.getStudentId();
-		ResponseEntity<Student> response = restTemplate.getForEntity(studentUrl, Student.class);
-		if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-			Student student = response.getBody();
-
-			if (!student.getId().equals(payment.getStudentId())) {
-				return null;
-			} else {
-				Payment savedPayment = paymentRepository.save(payment);
-				return savedPayment;
-			}
-
+		Student student = apiClient.getStudentById(payment.getStudentId());
+		if (student.getId() != payment.getStudentId()) {
+			return null;
 		} else {
-			System.out.println("Student not found: " + payment.getStudentId());
+			Payment savedPayment = paymentRepository.save(payment);
+			return savedPayment;
 		}
-		return null;
 	}
-	
-	
-	public Student student(String studentId) {
-		String studentUrl = "http://localhost:8082/student-service/students/" + studentId;
-		ResponseEntity<Student> response = restTemplate.getForEntity(studentUrl, Student.class);
-		if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-			Student student = response.getBody();
-			if (student!=null) {
-				return student;
-			} 
+
+	public List<Payment> getPaymentsToday() {
+		LocalDate today = LocalDate.now();
+		LocalDateTime startOfDay = today.atStartOfDay();
+		LocalDateTime endOfDay = today.atTime(23, 59, 59);
+		return paymentRepository.findByCreatedAtBetween(startOfDay, endOfDay);
+	}
+
+	public List<Payment> getPaymentsYesterday() {
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		LocalDateTime startOfDay = yesterday.atStartOfDay();
+		LocalDateTime endOfDay = yesterday.atTime(23, 59, 59);
+		return paymentRepository.findByCreatedAtBetween(startOfDay, endOfDay);
+	}
+
+	public List<Payment> getPaymentsLastYear() {
+		int lastYear = LocalDate.now().getYear() - 1;
+		LocalDateTime startOfYear = LocalDate.of(lastYear, 1, 1).atStartOfDay();
+		LocalDateTime endOfYear = LocalDate.of(lastYear, 12, 31).atTime(23, 59, 59);
+		return paymentRepository.findPaymentsByYear(startOfYear, endOfYear);
+	}
+
+	public Student student(long studentId) {
+		Student student = apiClient.getStudentById(studentId);
+		if (student == null || student.getId() != studentId) {
+			throw new IllegalArgumentException("Student verification failed.");
+		} else {
+			return student;
 		}
-		return null;
 	}
-	
-	
+
+	public Catalog getCatalog(long courseId) {
+		Catalog catalog = catalogClient.getCourse(courseId);
+		if (catalog == null || catalog.getId()!=courseId) {
+			throw new IllegalArgumentException("Student verification failed.");
+		} else {
+			return catalog;
+		}
+
+	}
+
 	public Student resetStudentFee(Student student) {
-	    String studentUrl = "http://localhost:8082/student-service/students/update";
-	    ResponseEntity<Student> response = restTemplate.postForEntity(studentUrl, student, Student.class);
-	    if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-	        return response.getBody();
-	    }
-	    return null;
+		Student studentRes = apiClient.updateStudent(student);
+		if (studentRes != null) {
+			return studentRes;
+		}
+		return null;
 	}
-	
+
+	public List<Payment> findAll() {
+		return paymentRepository.findAll();
+	}
+
+	public Optional<Payment> findById(long id) {
+		return paymentRepository.findById(id);
+	}
+
 }

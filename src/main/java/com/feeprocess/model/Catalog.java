@@ -1,31 +1,21 @@
 package com.feeprocess.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Catalog {
-    private String id;
-    private double studentClass;
-    private double fee;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public double getStudentClass() {
-        return studentClass;
-    }
-
-    public void setStudentClass(double studentClass) {
-        this.studentClass = studentClass;
-    }
-
-    public double getFee() {
-        return fee;
-    }
-
-    public void setFee(double fee) {
-        this.fee = fee;
-    }
+    private long id;
+    private String courseCode;       // Unique course identifier (e.g., CS101)
+    private String courseName;       // Course Name (e.g., Data Structures)
+    private String description;      // Course Description
+    private String department;       // Department (e.g., Computer Science)
+    private String academicProgram;  // Bachelor's, Master's, etc.
+    private String subjects;   // List of subject codes linked to the course
+    private int credits;             // Number of credits for the course
+    private String facultyId;
+    private double courseFee;
 }

@@ -1,39 +1,56 @@
 # Server Configuration
 server:
-  port: 10101
+  port: 8081
   servlet:
-    context-path: /fee-payment-process
+    context-path: /
 
 # Spring Configurations
 spring:
   application:
-    name: fee-payment-process
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/fee-payment-db
-      database: fee-payment-db
-  jpa:
-    show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
-    properties:
-      hibernate:
-        format_sql: true
-        ddl-auto: create-update
-        jdbc:
-          lob:
-            non_contextual_creation: false
+    name: fee-service
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/fee-payment-db
+#      database: fee-payment-db
+#  jpa:
+#    show-sql: true
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    generate-ddl: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        ddl-auto: create-update
+#        jdbc:
+#          lob:
+#            non_contextual_creation: false
+  datasource:
+    url: jdbc:h2:mem:feedb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   h2:
     console:
       enabled: true
       path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
-
-camunda.bpm:
-  admin-user:
-    id: ahin
-    password: ahin
-  metrics:
-    db-reporter-activate: false
-  database:
-    schema-update: create-drop
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

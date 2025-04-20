@@ -13,28 +13,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "payment")
-public class Payment {
+@Table(name = "financical_record")
+public class FinancicalRecord {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private Long studentId;
-    private String paymentMode;
-    private String transactionId;
     private String studentClass;
     private String courseCode;
-    private long courseId;
     private double paidAmount;
     private double pendingAmount;
     private String status;
-    private boolean isFullyPaid;
+    private String accadamicYear;
     @CreatedDate
     private LocalDateTime createdAt;
-    
-    
-
+	    
 }
